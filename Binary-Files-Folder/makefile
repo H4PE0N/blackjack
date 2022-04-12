@@ -45,7 +45,7 @@ STD_OBJECT_FILES := $(MASTER_OBJECTS) $(ENGINE_OBJECTS)
 COMPILE_COMPILOR := gcc
 COMPILE_FLAGS := -Wall -Werror
 
-SDL_LIB_FLAGS := -lSDL2main -lSDL2 -lSDL2_image
+SDL_LIB_FLAGS := -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 SDL_DIR_FLAGS := -ISDL2/include -LSDL2/lib
 
 # This is the compile flags needed for Windows:
