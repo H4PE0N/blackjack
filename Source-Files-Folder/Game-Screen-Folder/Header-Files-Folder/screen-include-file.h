@@ -12,6 +12,7 @@
 #include "../../Deck-Engine-Folder/Header-Files-Folder/engine-include-file.h"
 
 #include "game-screen-structs.h"
+#include "game-screen-defines.h"
 #include "screen-help-functions.h"
 #include "setup-screen-struct.h"
 #include "render-board-screen.h"

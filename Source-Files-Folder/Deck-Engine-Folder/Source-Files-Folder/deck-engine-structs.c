@@ -17,10 +17,10 @@ const unsigned int RANK_QUEEN = 0b1100;
 const unsigned int RANK_KING  = 0b1101;
 
 const unsigned int SUIT_NONE   = 0b000;
-const unsigned int SUIT_DIMNDS = 0b001;
-const unsigned int SUIT_SPADES = 0b010;
-const unsigned int SUIT_HEARTS = 0b011;
-const unsigned int SUIT_CLUBS  = 0b100;
+const unsigned int SUIT_SPADES = 0b001;
+const unsigned int SUIT_HEARTS = 0b010;
+const unsigned int SUIT_CLUBS  = 0b011;
+const unsigned int SUIT_DIMNDS = 0b100;
 const unsigned int SUIT_JOKER  = 0b101;
 
 const Card CARD_SUIT_MASK = 0b1110000;
