@@ -3,7 +3,7 @@
 
 bool render_game_board(Screen screen)
 {
-	TTF_Font* textFont = TTF_OpenFont("../Source-Files-Folder/Game-Screen-Folder/8bitOperatorPlus8-Bold.ttf", 24);
+	TTF_Font* textFont = TTF_OpenFont("../Source-Files-Folder/Game-Screen-Folder/Images-Folder/8Bit-font.ttf", 24);
 
 	if(textFont == NULL)
 	{
@@ -17,10 +17,10 @@ bool render_game_board(Screen screen)
 	SDL_Texture* message = SDL_CreateTextureFromSurface(screen.renderer, surfaceMessage);
 
 	SDL_Rect messageRect;
-	messageRect.x = 600;
+	messageRect.x = 500;
 	messageRect.y = 740;
-	messageRect.w = 120;
-	messageRect.h = 20;
+	messageRect.w = 240;
+	messageRect.h = 40;
 
 	SDL_RenderCopy(screen.renderer, message, NULL, &messageRect);
 

@@ -12,6 +12,11 @@ int main(int argc, char* argv[])
 		return false;
 	}
 
+	Card* deck = create_default_deck();
+
+
+
+
 	render_game_board(screen);
 
 	SDL_UpdateWindowSurface(screen.window);
@@ -25,6 +30,8 @@ int main(int argc, char* argv[])
 		SDL_Delay(100);
 	}
 
+
+	free(deck);
 
 	printf("free_screen_struct\n");
 	free_screen_struct(screen);

@@ -8,4 +8,9 @@
 #include <math.h>
 #include <string.h>
 
+#include "deck-engine-structs.h"
+#include "engine-struct-macros.h"
+#include "deck-engine-defines.h"
+#include "card-deck-handler.h"
+
 #endif
