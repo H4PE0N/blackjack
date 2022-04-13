@@ -79,13 +79,28 @@ bool playing_cards_value(int* value, Card cards[])
 {
 	unsigned int amount = card_array_amount(cards);
 
-	int tempValue = 0, currentValue = 0;
+	int tempValue = 0;
+	int aceAmount = 0;
 
 	for(int index = 0; index < amount; index += 1)
 	{
-		if(!playing_card_value(&currentValue, cards[index])) continue;
+		if(!deck_card_exists(cards[index])) return false;
 
-		tempValue += currentValue;
+
+		unsigned int rank = CARD_RANK_MACRO(cards[index]);
+
+		if(NUMBER_IN_BOUNDS(rank, 2, 10)) tempValue += rank;
+
+		else if(NUMBER_IN_BOUNDS(rank, 11, 13)) tempValue += 10;
+
+		else if(rank == 1) aceAmount += 1;
+	}
+
+	for(int index = 0; index < aceAmount; index += 1)
+	{
+		if(tempValue + 11 <= 21) tempValue += 11;
+
+		else tempValue += 1;
 	}
 
 	*value = tempValue;
@@ -96,21 +111,6 @@ bool playing_cards_value(int* value, Card cards[])
 int create_random_int(int minimum, int maximum)
 {
 	return (rand() % (maximum - minimum)) + minimum;
-}
-
-bool playing_card_value(int* value, Card card)
-{
-	if(!deck_card_exists(card)) return false;
-
-	unsigned int rank = CARD_RANK_MACRO(card);
-
-	if(NUMBER_IN_BOUNDS(rank, 2, 10)) *value = rank;
-
-	else if(NUMBER_IN_BOUNDS(rank, 11, 13)) *value = 10;
-
-	else if(rank == 1) *value = 1;
-
-	return true;
 }
 
 void shuffle_card_array(Card* cards)

@@ -56,19 +56,87 @@ bool render_game_board(Screen screen, Card* playerCards, Card* dealerCards)
 
 
 	int playerValue = 0;
+	int dealerValue = 0;
 
 	playing_cards_value(&playerValue, playerCards);
+	playing_cards_value(&dealerValue, dealerCards);
 
-	char text[200];
-
-	sprintf(text, "Value: %d", playerValue);
-
-	Rect position = {580, 700, 200, 40};
 
 	Color color = {255, 255, 255};
 
-	render_screen_text(screen, text, position, color);
+	char playerText[200];
+	char dealerText[200];
 
+	sprintf(playerText, "PlayerValue: %d", playerValue);
+	sprintf(dealerText, "DealerValue: %d", dealerValue);
+	
+
+	render_screen_text(screen, playerText, color, 450, 500, 1.5);
+	render_screen_text(screen, dealerText, color, 450, 540, 1.5);
+
+	render_game_options(screen);
+
+	render_player_values(screen);
+
+	render_play_values(screen);
+
+	return true;
+}
+
+bool render_result_screen(Screen screen, int playerValue, int dealerValue)
+{
+	if(playerValue <= 21 && (playerValue > dealerValue ||  dealerValue > 21))
+	{ // WIN
+		Color color = {0, 0, 255};
+
+		render_screen_text(screen, "YOU WON : $50", color, 0, 380, 4);
+	}
+
+	else if(playerValue < dealerValue || playerValue > 21)
+	{ // LOSE
+		Color color = {255, 0, 0};
+
+		render_screen_text(screen, "YOU LOST : $50", color, 0, 380, 4);
+	}
+
+	else if(playerValue == dealerValue && !(dealerValue > 21 && playerValue > 21))
+	{ // SAME
+		Color color = {255, 255, 255};
+
+		render_screen_text(screen, "EQUAL", color, 0, 380, 4);	
+	}
+	
+
+	return true;
+}
+
+bool render_play_values(Screen screen)
+{
+	Color color = {255, 255, 255};
+
+	render_screen_text(screen, "STAKE : $50", color, 100, 500, 1.5);
+
+	return true;
+}
+
+bool render_player_values(Screen screen)
+{
+	Color color = {255, 255, 255};
+
+	render_screen_text(screen, "NAME : HAMPUS FRIDHOLM", color, 100, 300, 1.5);
+
+	render_screen_text(screen, "MONEY : $490", color, 100, 340, 1.5);
+
+	return true;
+}
+
+bool render_game_options(Screen screen)
+{
+	Color color = {255, 255, 255};
+
+	render_screen_text(screen, "DEAL : SPACE", color, 500, 100, 1.5);
+
+	render_screen_text(screen, "STAY : ENTER", color, 500, 140, 1.5);
 
 	return true;
 }
@@ -124,7 +192,7 @@ bool render_screen_image(Screen screen, Surface* image, Rect position)
 	return true;
 }
 
-bool render_screen_text(Screen screen, char text[], Rect position, Color color)
+bool render_screen_text(Screen screen, char text[], Color color, int width, int height, float size)
 {
 	Font* textFont = NULL;
 
@@ -134,10 +202,14 @@ bool render_screen_text(Screen screen, char text[], Rect position, Color color)
 
 	SDL_Texture* message = SDL_CreateTextureFromSurface(screen.renderer, surfaceMessage);
 
+	Rect position = {width, height, surfaceMessage->w * size, surfaceMessage->h * size};
+
 	SDL_RenderCopy(screen.renderer, message, NULL, &position);
 
 	SDL_FreeSurface(surfaceMessage);
 	SDL_DestroyTexture(message);
+
+	TTF_CloseFont(textFont);
 
 	return true;
 }

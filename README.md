@@ -8,6 +8,7 @@ https://github.com/asivitz/PlayingCards
 
 https://www.1001freefonts.com/lcd-fonts.php
 
+https://www.youtube.com/watch?v=PljDuynF-j0
 
 === GAME PLAY OPTIONS ===
 - deal
@@ -18,3 +19,7 @@ https://www.1001freefonts.com/lcd-fonts.php
 ===== PLAYER ITEMS ======
 - money
 - name
+
+====== GAME ITEMS =======
+- money / bet
+
