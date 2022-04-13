@@ -5,7 +5,7 @@ int main(int argc, char* argv[])
 {
 	Screen screen;
 
-	if(!setup_screen_struct(&screen, 800, 800, "treestump\0"))
+	if(!setup_screen_struct(&screen, WINDOW_WIDTH, WINDOW_HEIGHT, "BlackJack"))
 	{
 		printf("Could not setup screen!\n");
 

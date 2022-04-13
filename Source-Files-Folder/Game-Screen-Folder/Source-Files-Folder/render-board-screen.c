@@ -1,39 +1,61 @@
 
 #include "../Header-Files-Folder/screen-include-file.h"
 
+bool default_folder_image(Surface** image, char filename[])
+{
+	char filePath[256];
+
+	sprintf(filePath, "%s/%s", IMAGE_FOLDER, filename);
+
+	return extract_file_image(image, filePath);
+}
+
+bool default_folder_font(Font** font, char filename[], int size)
+{
+	char filePath[256];
+
+	sprintf(filePath, "%s/%s", FONT_FOLDER, filename);
+
+	return extract_file_font(font, filePath, size);
+}
+
 bool render_game_board(Screen screen)
 {
-	Surface* boardImage = NULL;
-	if(!extract_file_image(&boardImage, "../Source-Files-Folder/Game-Screen-Folder/Images-Folder/table.jpeg")) return false;
+	Surface* tableImage = NULL;
+	if(!default_folder_image(&tableImage, (char*) TABLE_IMAGE)) return false;
 	
 	Rect boardPosition = {0, 0, 800, 800};
 
-	render_screen_image(screen, boardImage, boardPosition);
+	render_screen_image(screen, tableImage, boardPosition);
 
 
 
 	Surface* cardImage = NULL;
-	if(!extract_file_image(&cardImage, "../Source-Files-Folder/Game-Screen-Folder/Images-Folder/spades-ace.png")) return false;
+	if(!default_folder_image(&cardImage, "spades-three.png")) return false;
 	
-	Rect cardPosition = {300, 300, 200, 200};
+	Rect cardPosition = {300, 300, CARD_WIDTH, CARD_HEIGHT};
 
 	render_screen_image(screen, cardImage, cardPosition);
+
+
+	Surface* cardImage2 = NULL;
+	if(!default_folder_image(&cardImage2, "hearts-ace.png")) return false;
+	
+	Rect cardPosition2 = {340, 300, CARD_WIDTH, CARD_HEIGHT};
+
+	render_screen_image(screen, cardImage2, cardPosition2);
 
 	return true;
 }
 
-bool extract_file_image(Surface** image, char filename[])
+bool extract_file_image(Surface** image, char filePath[])
 {
-	*image = IMG_Load(filename);
-
-	return (*image != NULL);
+	return ( (*image = IMG_Load(filePath)) != NULL);
 }
 
-bool extract_file_font(TTF_Font** font, char filename[], int size)
+bool extract_file_font(Font** font, char filePath[], int size)
 {
-	*font = TTF_OpenFont(filename, size);
-
-	return (*font != NULL);
+	return ( (*font = TTF_OpenFont(filePath, size)) != NULL);
 }
 
 bool render_screen_image(Screen screen, Surface* image, Rect position)
@@ -51,9 +73,9 @@ bool render_screen_image(Screen screen, Surface* image, Rect position)
 
 bool render_screen_text(Screen screen, char text[], Rect position, Color color)
 {
-	TTF_Font* textFont = NULL;
+	Font* textFont = NULL;
 
-	if(!extract_file_font(&textFont, (char*) FONT_FILE, FONT_SIZE)) return false;	
+	if(!default_folder_font(&textFont, (char*) FONT_FILE, FONT_SIZE)) return false;	
 
 	SDL_Surface* surfaceMessage = TTF_RenderText_Solid(textFont, text, color); 
 
