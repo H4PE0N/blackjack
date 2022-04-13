@@ -7,4 +7,3 @@ const unsigned int DECK_RANKS = 13;
 
 const char* SUIT_STRINGS[] = {"none", "spades", "hearts", "clubs", "dimnds", "joker"};
 const char* RANK_STRINGS[] = {"none", "ace", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "jack", "queen", "king"};
-

@@ -3,18 +3,18 @@
 
 Card* create_empty_deck(unsigned int amount)
 {
-	Card* deck = malloc(sizeof(Card) * amount);
+	Card* deck = malloc(sizeof(Card) * (amount + 1));
 
-	for(int index = 0; index < amount; index += 1)
+	for(int index = 0; index < (amount + 1); index += 1)
 	{
-		deck[index] = SUIT_RANK_CARD(SUIT_NONE, RANK_NONE);
+		deck[index] = CARD_NONE;
 	}
 	return deck;
 }
 
 Card* create_default_deck()
 {
-	Card* deck = malloc(sizeof(Card) * DECK_CARDS);
+	Card* deck = malloc(sizeof(Card) * (DECK_CARDS + 1));
 
 	unsigned int index = 0;
 
@@ -25,6 +25,9 @@ Card* create_default_deck()
 			deck[index++] = SUIT_RANK_CARD(suit, rank);
 		}
 	}
+
+	deck[DECK_CARDS] = CARD_NONE;
+
 	return deck;
 }
 
@@ -57,4 +60,82 @@ unsigned int card_array_amount(Card cardArray[])
 	while(deck_card_exists(cardArray[amount])) amount += 1;
 
 	return amount;
+}
+
+bool deal_playing_card(Card* card, Card* deck)
+{
+	unsigned int amount = card_array_amount(deck);
+
+	if(amount <= 0) return false;
+
+	*card = deck[amount - 1];
+
+	deck[amount - 1] = CARD_NONE;
+
+	return true;
+}
+
+bool playing_cards_value(int* value, Card cards[])
+{
+	unsigned int amount = card_array_amount(cards);
+
+	int tempValue = 0, currentValue = 0;
+
+	for(int index = 0; index < amount; index += 1)
+	{
+		if(!playing_card_value(&currentValue, cards[index])) continue;
+
+		tempValue += currentValue;
+	}
+
+	*value = tempValue;
+
+	return true;
+}
+
+int create_random_int(int minimum, int maximum)
+{
+	return (rand() % (maximum - minimum)) + minimum;
+}
+
+bool playing_card_value(int* value, Card card)
+{
+	if(!deck_card_exists(card)) return false;
+
+	unsigned int rank = CARD_RANK_MACRO(card);
+
+	if(NUMBER_IN_BOUNDS(rank, 2, 10)) *value = rank;
+
+	else if(NUMBER_IN_BOUNDS(rank, 11, 13)) *value = 10;
+
+	else if(rank == 1) *value = 1;
+
+	return true;
+}
+
+void shuffle_card_array(Card* cards)
+{
+	unsigned int amount = card_array_amount(cards);
+
+	for(int index = 0; index < amount; index += 1)
+	{
+		int randomIndex = create_random_int(0, amount - 1);
+		Card temp = cards[index];
+		cards[index] = cards[randomIndex];
+		cards[randomIndex] = temp;
+	}
+}
+
+bool deal_playing_cards(Card* cards, Card* deck, int amount)
+{
+	unsigned int deckAmount = card_array_amount(deck);
+
+	if(!NUMBER_IN_BOUNDS(amount, 1, deckAmount)) return false;
+
+	for(int index = 0; index < amount; index += 1)
+	{
+		if(!deal_playing_card(&cards[index], deck)) return false;
+	}
+
+	return true;
 }

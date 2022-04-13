@@ -32,4 +32,6 @@ extern const Card CARD_RANK_MASK;
 extern const Card CARD_SUIT_SHIFT;
 extern const Card CARD_RANK_SHIFT;
 
+extern const Card CARD_NONE;
+
 #endif

@@ -28,3 +28,5 @@ const Card CARD_RANK_MASK = 0b0001111;
 
 const unsigned int CARD_SUIT_SHIFT = 4;
 const unsigned int CARD_RANK_SHIFT = 0;
+
+const Card CARD_NONE = 0b0000000;

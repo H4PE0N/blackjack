@@ -14,4 +14,16 @@ bool deck_card_exists(Card);
 
 unsigned int card_array_amount(Card[]);
 
+bool deal_playing_card(Card*, Card*);
+
+bool deal_playing_cards(Card*, Card*, int);
+
+bool playing_card_value(int*, Card);
+
+bool playing_cards_value(int*, Card[]);
+
+int create_random_int(int, int);
+
+void shuffle_card_array(Card*);
+
 #endif

@@ -7,3 +7,14 @@ https://sv.wikipedia.org/wiki/Black_Jack
 https://github.com/asivitz/PlayingCards
 
 https://www.1001freefonts.com/lcd-fonts.php
+
+
+=== GAME PLAY OPTIONS ===
+- deal
+- stand
+- split
+- double
+
+===== PLAYER ITEMS ======
+- money
+- name

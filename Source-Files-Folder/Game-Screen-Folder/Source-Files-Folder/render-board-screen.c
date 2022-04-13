@@ -40,12 +40,7 @@ bool default_folder_font(Font** font, char filename[], int size)
 	return extract_file_font(font, filePath, size);
 }
 
-int create_random_int(int minimum, int maximum)
-{
-	return (rand() % (maximum - minimum)) + minimum;
-}
-
-bool render_game_board(Screen screen)
+bool render_game_board(Screen screen, Card* playerCards, Card* dealerCards)
 {
 	Surface* tableImage = NULL;
 	if(!default_folder_image(&tableImage, (char*) TABLE_IMAGE)) return false;
@@ -55,26 +50,25 @@ bool render_game_board(Screen screen)
 	if(!render_screen_image(screen, tableImage, tablePosition)) return false;
 
 
-	int amount = 8;
+	if(!render_screen_cards(screen, dealerCards, 400, 120)) return false;
 
-	Card cards[amount + 1];
-
-	for(int index = 0; index < amount; index += 1)
-	{
-		unsigned int suit = create_random_int(1, DECK_SUITS);
-		unsigned int rank = create_random_int(1, DECK_RANKS);
-
-		cards[index] = SUIT_RANK_CARD(suit, rank);
-	}
-
-	cards[amount] = SUIT_RANK_CARD(SUIT_NONE, RANK_NONE);
+	if(!render_screen_cards(screen, playerCards, 400, 680)) return false;
 
 
-	if(!render_screen_cards(screen, cards, 400, 120)) return false;
+	int playerValue = 0;
 
-	if(!render_screen_cards(screen, cards, 400, 680)) return false;
+	playing_cards_value(&playerValue, playerCards);
 
-	printf("Rendered all\n");
+	char text[200];
+
+	sprintf(text, "Value: %d", playerValue);
+
+	Rect position = {580, 700, 200, 40};
+
+	Color color = {255, 255, 255};
+
+	render_screen_text(screen, text, position, color);
+
 
 	return true;
 }
