@@ -17,6 +17,7 @@ const unsigned int CARD_WIDTH = 200;
 const unsigned int CARD_HEIGHT = 200;
 
 const unsigned int CARD_MARGIN = 30;
+const unsigned int HAND_MARGIN = 20;
 
 const char CARD_FILE_MALL[] = "%s-%s.png";
 const char CARD_TEXT_MALL[] = "%s of %s";

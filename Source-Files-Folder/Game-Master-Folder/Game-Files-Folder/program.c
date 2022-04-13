@@ -19,8 +19,20 @@ bool game_play_handler(Screen screen, Card* deck)
 	Card* dealerCards = create_empty_deck(8);
 
 
-	deal_dealer_cards(dealerCards, deck);
-	deal_player_cards(playerCards, deck);
+	if(!deal_dealer_cards(dealerCards, deck))
+	{
+		free(playerCards);
+		free(dealerCards);
+
+		return false;
+	}
+	if(!deal_player_cards(playerCards, deck))
+	{
+		free(playerCards);
+		free(dealerCards);
+
+		return false;
+	}
 
 	int playerValue = 0;
 
@@ -59,12 +71,17 @@ bool game_play_handler(Screen screen, Card* deck)
 		{
 			unsigned int playerAmount = card_array_amount(playerCards);
 
-			deal_upside_card(&playerCards[playerAmount], deck);
+			if(!deal_upside_card(&playerCards[playerAmount], deck))
+			{
+				free(playerCards);
+				free(dealerCards);
+
+				return false;
+			}
 		}
 
 		playing_cards_value(&playerValue, playerCards);
 	}
-
 	// The dealer gets their cards
 
 	unsigned int dAmount = card_array_amount(dealerCards);
@@ -72,6 +89,9 @@ bool game_play_handler(Screen screen, Card* deck)
 	{
 		dealerCards[index] = TURN_CARD_SHOW(dealerCards[index]);
 	}
+
+	render_game_board(screen, playerCards, dealerCards);
+	SDL_UpdateWindowSurface(screen.window);
 
 	int dealerValue = 0;
 
@@ -89,14 +109,23 @@ bool game_play_handler(Screen screen, Card* deck)
 
 		while(dealerValue < 21 && (dealerValue < 17 || (dealerValue < playerValue && hasAnAce) ))
 		{
-			printf("dealing another card to the dealer\n");
+			SDL_Delay(1000);
 
 			unsigned int dealerAmount = card_array_amount(dealerCards);
 
-			deal_upside_card(&dealerCards[dealerAmount], deck);
+			if(!deal_upside_card(&dealerCards[dealerAmount], deck))
+			{
+				free(playerCards);
+				free(dealerCards);
+
+				return false;
+			}
 
 			playing_cards_value(&dealerValue, dealerCards);
 			hasAnAce = rank_within_cards(dealerCards, RANK_ACE);
+
+			render_game_board(screen, playerCards, dealerCards);
+			SDL_UpdateWindowSurface(screen.window);
 		}
 	}
 

@@ -50,9 +50,9 @@ bool render_game_board(Screen screen, Card* playerCards, Card* dealerCards)
 	if(!render_screen_image(screen, tableImage, tablePosition)) return false;
 
 
-	if(!render_screen_cards(screen, dealerCards, 400, 120)) return false;
+	if(!render_screen_cards(screen, dealerCards, WINDOW_WIDTH / 2, HAND_MARGIN + CARD_HEIGHT / 2)) return false;
 
-	if(!render_screen_cards(screen, playerCards, 400, 680)) return false;
+	if(!render_screen_cards(screen, playerCards, WINDOW_WIDTH / 2, WINDOW_HEIGHT - CARD_HEIGHT / 2 - HAND_MARGIN)) return false;
 
 
 	int playerValue = 0;
@@ -134,9 +134,9 @@ bool render_game_options(Screen screen)
 {
 	Color color = {255, 255, 255};
 
-	render_screen_text(screen, "DEAL : SPACE", color, 500, 100, 1.5);
+	render_screen_text(screen, "DEAL : H", color, 500, 100, 1.5);
 
-	render_screen_text(screen, "STAY : ENTER", color, 500, 140, 1.5);
+	render_screen_text(screen, "STAY : G", color, 500, 140, 1.5);
 
 	return true;
 }
