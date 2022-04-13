@@ -12,5 +12,10 @@ const char TABLE_IMAGE[] = "table.jpeg";
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 800;
 
-const unsigned int CARD_WIDTH = 100;
-const unsigned int CARD_HEIGHT = 100;
+const unsigned int CARD_WIDTH = 200;
+const unsigned int CARD_HEIGHT = 200;
+
+const unsigned int CARD_MARGIN = 30;
+
+const char CARD_FILE_MALL[] = "%s-%s.png";
+const char CARD_TEXT_MALL[] = "%s of %s";

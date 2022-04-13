@@ -1,6 +1,27 @@
 
 #include "../Header-Files-Folder/screen-include-file.h"
 
+bool create_card_filename(char* filename, Card card)
+{
+	unsigned int suit = CARD_SUIT_MACRO(card);
+	unsigned int rank = CARD_RANK_MACRO(card);
+
+	if(!NUMBER_IN_BOUNDS(suit, 1, DECK_SUITS) || !NUMBER_IN_BOUNDS(rank, 1, DECK_RANKS)) return false;
+
+	sprintf(filename, CARD_FILE_MALL, SUIT_STRINGS[suit], RANK_STRINGS[rank]);
+
+	return true;
+}
+
+bool extract_card_image(Surface** image, Card card)
+{
+	char filename[256];
+
+	if(!create_card_filename(filename, card)) return false;
+
+	return default_folder_image(image, filename);
+}
+
 bool default_folder_image(Surface** image, char filename[])
 {
 	char filePath[256];
@@ -19,31 +40,69 @@ bool default_folder_font(Font** font, char filename[], int size)
 	return extract_file_font(font, filePath, size);
 }
 
+int create_random_int(int minimum, int maximum)
+{
+	return (rand() % (maximum - minimum)) + minimum;
+}
+
 bool render_game_board(Screen screen)
 {
 	Surface* tableImage = NULL;
 	if(!default_folder_image(&tableImage, (char*) TABLE_IMAGE)) return false;
 	
-	Rect boardPosition = {0, 0, 800, 800};
+	Rect tablePosition = {0, 0, 800, 800};
+	
+	if(!render_screen_image(screen, tableImage, tablePosition)) return false;
 
-	render_screen_image(screen, tableImage, boardPosition);
+
+	int amount = 8;
+
+	Card cards[amount + 1];
+
+	for(int index = 0; index < amount; index += 1)
+	{
+		unsigned int suit = create_random_int(1, DECK_SUITS);
+		unsigned int rank = create_random_int(1, DECK_RANKS);
+
+		cards[index] = SUIT_RANK_CARD(suit, rank);
+	}
+
+	cards[amount] = SUIT_RANK_CARD(SUIT_NONE, RANK_NONE);
 
 
+	if(!render_screen_cards(screen, cards, 400, 120)) return false;
 
+	if(!render_screen_cards(screen, cards, 400, 680)) return false;
+
+	printf("Rendered all\n");
+
+	return true;
+}
+
+bool render_screen_card(Screen screen, Card card, int width, int height)
+{
 	Surface* cardImage = NULL;
-	if(!default_folder_image(&cardImage, "spades-three.png")) return false;
-	
-	Rect cardPosition = {300, 300, CARD_WIDTH, CARD_HEIGHT};
 
-	render_screen_image(screen, cardImage, cardPosition);
+	if(!extract_card_image(&cardImage, card)) return false;
 
+	Rect position = {width, height, CARD_WIDTH, CARD_HEIGHT};
 
-	Surface* cardImage2 = NULL;
-	if(!default_folder_image(&cardImage2, "hearts-ace.png")) return false;
-	
-	Rect cardPosition2 = {340, 300, CARD_WIDTH, CARD_HEIGHT};
+	return render_screen_image(screen, cardImage, position);
+}
 
-	render_screen_image(screen, cardImage2, cardPosition2);
+bool render_screen_cards(Screen screen, Card cards[], int width, int height)
+{
+	unsigned int amount = card_array_amount(cards);
+
+	int renderHeight = height - (CARD_HEIGHT / 2);
+	int startWidth = width - ((CARD_MARGIN * (amount - 1) + CARD_WIDTH) / 2);
+
+	for(int index = 0; index < amount; index += 1)
+	{
+		int renderWidth = startWidth + (CARD_MARGIN * index);
+
+		if(!render_screen_card(screen, cards[index], renderWidth, renderHeight)) return false;
+	}
 
 	return true;
 }

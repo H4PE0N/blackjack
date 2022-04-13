@@ -6,7 +6,7 @@ extern const unsigned int DECK_CARDS;
 extern const unsigned int DECK_SUITS;
 extern const unsigned int DECK_RANKS;
 
-extern const char* STRING_SUITS[];
-extern const char* STRING_RANKS[];
+extern const char* SUIT_STRINGS[];
+extern const char* RANK_STRINGS[];
 
 #endif

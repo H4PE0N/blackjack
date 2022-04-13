@@ -16,4 +16,6 @@ bool default_folder_font(Font**, char[], int);
 
 bool default_folder_image(Surface**, char[]);
 
+bool render_screen_cards(Screen, Card[], int, int);
+
 #endif
