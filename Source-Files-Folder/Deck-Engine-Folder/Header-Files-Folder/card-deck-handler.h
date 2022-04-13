@@ -26,4 +26,6 @@ int create_random_int(int, int);
 
 void shuffle_card_array(Card*);
 
+bool rank_within_cards(Card[], unsigned int);
+
 #endif

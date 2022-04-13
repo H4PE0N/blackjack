@@ -33,8 +33,9 @@ bool game_play_handler(Screen screen, Card* deck)
 
 	SDL_WaitEvent(&event);
 
-	while(!(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_g))
-	// Try to get close to 21 - until you want to stay
+	playing_cards_value(&playerValue, playerCards);
+
+	while(playerValue < 21)
 	{
 		SDL_WaitEvent(&event);
 
@@ -49,9 +50,7 @@ bool game_play_handler(Screen screen, Card* deck)
 			return false;
 		}
 
-		playing_cards_value(&playerValue, playerCards);
-
-		if(playerValue > 21)
+		if((event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_g))
 		{
 			break;
 		}
@@ -62,6 +61,8 @@ bool game_play_handler(Screen screen, Card* deck)
 
 			deal_playing_card(&playerCards[playerAmount], deck);
 		}
+
+		playing_cards_value(&playerValue, playerCards);
 	}
 
 
@@ -77,9 +78,9 @@ bool game_play_handler(Screen screen, Card* deck)
 
 		playing_cards_value(&dealerValue, dealerCards);
 
-		int index = 0;
+		bool hasAnAce = rank_within_cards(dealerCards, RANK_ACE);
 
-		while(dealerValue < 17 && index < 3)
+		while(dealerValue < 21 && (dealerValue < 17 || (dealerValue < playerValue && hasAnAce) ))
 		{
 			printf("dealing another card to the dealer\n");
 
@@ -88,7 +89,7 @@ bool game_play_handler(Screen screen, Card* deck)
 			deal_playing_card(&dealerCards[dealerAmount], deck);
 
 			playing_cards_value(&dealerValue, dealerCards);
-			index += 1;
+			hasAnAce = rank_within_cards(dealerCards, RANK_ACE);
 		}
 	}
 

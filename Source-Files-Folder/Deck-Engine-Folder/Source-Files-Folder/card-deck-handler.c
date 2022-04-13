@@ -75,6 +75,17 @@ bool deal_playing_card(Card* card, Card* deck)
 	return true;
 }
 
+bool rank_within_cards(Card cards[], unsigned int rank)
+{
+	unsigned int amount = card_array_amount(cards);
+
+	for(int index = 0; index < amount; index += 1)
+	{
+		if(CARD_RANK_MACRO(cards[index]) == rank) return true;
+	}
+	return false;
+}
+
 bool playing_cards_value(int* value, Card cards[])
 {
 	unsigned int amount = card_array_amount(cards);
