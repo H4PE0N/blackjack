@@ -23,10 +23,11 @@ const unsigned int SUIT_CLUBS  = 0b011;
 const unsigned int SUIT_DIMNDS = 0b100;
 const unsigned int SUIT_JOKER  = 0b101;
 
-const Card CARD_SUIT_MASK = 0b1110000;
-const Card CARD_RANK_MASK = 0b0001111;
+const Card CARD_SHOW_MASK = 0b10000000;
+const Card CARD_SUIT_MASK = 0b01110000;
+const Card CARD_RANK_MASK = 0b00001111;
 
 const unsigned int CARD_SUIT_SHIFT = 4;
 const unsigned int CARD_RANK_SHIFT = 0;
 
-const Card CARD_NONE = 0b0000000;
+const Card CARD_NONE = 0b00000000;

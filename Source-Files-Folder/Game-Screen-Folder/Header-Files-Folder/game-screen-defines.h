@@ -9,6 +9,7 @@ extern const char IMAGE_FOLDER[];
 extern const char FONT_FOLDER[];
 
 extern const char TABLE_IMAGE[];
+extern const char CARD_BACK_IMAGE[];
 
 extern const unsigned int WINDOW_WIDTH;
 extern const unsigned int WINDOW_HEIGHT;

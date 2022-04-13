@@ -15,12 +15,12 @@ bool game_play_handler(Screen screen, Card* deck)
 	*/
 
 	// Get cards
-	Card* playerCards = create_empty_deck(52);
-	Card* dealerCards = create_empty_deck(52);
+	Card* playerCards = create_empty_deck(8);
+	Card* dealerCards = create_empty_deck(8);
 
 
-	deal_playing_cards(dealerCards, deck, 2);
-	deal_playing_cards(playerCards, deck, 2);
+	deal_dealer_cards(dealerCards, deck);
+	deal_player_cards(playerCards, deck);
 
 	int playerValue = 0;
 
@@ -59,12 +59,19 @@ bool game_play_handler(Screen screen, Card* deck)
 		{
 			unsigned int playerAmount = card_array_amount(playerCards);
 
-			deal_playing_card(&playerCards[playerAmount], deck);
+			deal_upside_card(&playerCards[playerAmount], deck);
 		}
 
 		playing_cards_value(&playerValue, playerCards);
 	}
 
+	// The dealer gets their cards
+
+	unsigned int dAmount = card_array_amount(dealerCards);
+	for(int index = 0; index < dAmount; index += 1)
+	{
+		dealerCards[index] = TURN_CARD_SHOW(dealerCards[index]);
+	}
 
 	int dealerValue = 0;
 
@@ -74,7 +81,7 @@ bool game_play_handler(Screen screen, Card* deck)
 
 	if(playerValue <= 21)
 	{
-		// The dealer gets their cards
+		
 
 		playing_cards_value(&dealerValue, dealerCards);
 
@@ -86,7 +93,7 @@ bool game_play_handler(Screen screen, Card* deck)
 
 			unsigned int dealerAmount = card_array_amount(dealerCards);
 
-			deal_playing_card(&dealerCards[dealerAmount], deck);
+			deal_upside_card(&dealerCards[dealerAmount], deck);
 
 			playing_cards_value(&dealerValue, dealerCards);
 			hasAnAce = rank_within_cards(dealerCards, RANK_ACE);

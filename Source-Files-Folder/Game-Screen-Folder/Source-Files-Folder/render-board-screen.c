@@ -59,7 +59,7 @@ bool render_game_board(Screen screen, Card* playerCards, Card* dealerCards)
 	int dealerValue = 0;
 
 	playing_cards_value(&playerValue, playerCards);
-	playing_cards_value(&dealerValue, dealerCards);
+	upside_cards_value(&dealerValue, dealerCards);
 
 
 	Color color = {255, 255, 255};
@@ -145,7 +145,14 @@ bool render_screen_card(Screen screen, Card card, int width, int height)
 {
 	Surface* cardImage = NULL;
 
-	if(!extract_card_image(&cardImage, card)) return false;
+	if(CARD_SIDE_SHOW(card))
+	{
+		if(!extract_card_image(&cardImage, card)) return false;
+	}
+	else
+	{
+		if(!default_folder_image(&cardImage, (char*) CARD_BACK_IMAGE)) return false;
+	}
 
 	Rect position = {width, height, CARD_WIDTH, CARD_HEIGHT};
 

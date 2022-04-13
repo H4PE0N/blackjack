@@ -28,6 +28,7 @@ extern const unsigned int SUIT_JOKER;
 
 extern const Card CARD_SUIT_MASK;
 extern const Card CARD_RANK_MASK;
+extern const Card CARD_SHOW_MASK;
 
 extern const Card CARD_SUIT_SHIFT;
 extern const Card CARD_RANK_SHIFT;

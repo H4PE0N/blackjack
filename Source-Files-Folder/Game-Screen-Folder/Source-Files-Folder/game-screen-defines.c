@@ -8,6 +8,7 @@ const char FONT_FILE[] = "8Bit-font.ttf";
 const unsigned int FONT_SIZE = 24;
 
 const char TABLE_IMAGE[] = "table.jpeg";
+const char CARD_BACK_IMAGE[] = "backside.jpeg";
 
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 800;

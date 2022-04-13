@@ -22,7 +22,8 @@ Card* create_default_deck()
 	{
 		for(int rank = 1; rank <= DECK_RANKS; rank += 1)
 		{
-			deck[index++] = SUIT_RANK_CARD(suit, rank);
+			Card card = SUIT_RANK_CARD(suit, rank);
+			deck[index++] = TURN_CARD_DOWN(card);
 		}
 	}
 
@@ -60,19 +61,6 @@ unsigned int card_array_amount(Card cardArray[])
 	while(deck_card_exists(cardArray[amount])) amount += 1;
 
 	return amount;
-}
-
-bool deal_playing_card(Card* card, Card* deck)
-{
-	unsigned int amount = card_array_amount(deck);
-
-	if(amount <= 0) return false;
-
-	*card = deck[amount - 1];
-
-	deck[amount - 1] = CARD_NONE;
-
-	return true;
 }
 
 bool rank_within_cards(Card cards[], unsigned int rank)
@@ -119,6 +107,42 @@ bool playing_cards_value(int* value, Card cards[])
 	return true;
 }
 
+// FLAG: SHOW, DOWN, NONE
+bool upside_cards_value(int* value, Card cards[])
+{
+	unsigned int amount = card_array_amount(cards);
+
+	int tempValue = 0;
+	int aceAmount = 0;
+
+	for(int index = 0; index < amount; index += 1)
+	{
+		if(!deck_card_exists(cards[index])) return false;
+
+		if(!CARD_SIDE_SHOW(cards[index])) continue;
+
+
+		unsigned int rank = CARD_RANK_MACRO(cards[index]);
+
+		if(NUMBER_IN_BOUNDS(rank, 2, 10)) tempValue += rank;
+
+		else if(NUMBER_IN_BOUNDS(rank, 11, 13)) tempValue += 10;
+
+		else if(rank == 1) aceAmount += 1;
+	}
+
+	for(int index = 0; index < aceAmount; index += 1)
+	{
+		if(tempValue + 11 <= 21) tempValue += 11;
+
+		else tempValue += 1;
+	}
+
+	*value = tempValue;
+
+	return true;
+}
+
 int create_random_int(int minimum, int maximum)
 {
 	return (rand() % (maximum - minimum)) + minimum;
@@ -137,7 +161,51 @@ void shuffle_card_array(Card* cards)
 	}
 }
 
-bool deal_playing_cards(Card* cards, Card* deck, int amount)
+// FLAG: SHOW, DOWN, NONE
+// Instead of all "upside" and "hidden" functions
+bool deal_upside_card(Card* card, Card* deck)
+{
+	unsigned int amount = card_array_amount(deck);
+
+	if(amount <= 0) return false;
+
+	*card = TURN_CARD_SHOW(deck[amount - 1]);
+
+	deck[amount - 1] = CARD_NONE;
+
+	return true;
+}
+
+bool deal_hidden_card(Card* card, Card* deck)
+{
+	unsigned int amount = card_array_amount(deck);
+
+	if(amount <= 0) return false;
+
+	*card = TURN_CARD_DOWN(deck[amount - 1]);
+
+	deck[amount - 1] = CARD_NONE;
+
+	return true;
+}
+
+bool deal_player_cards(Card* playerCards, Card* deck)
+{
+	if(!deal_upside_card(&playerCards[0], deck)) return false;
+	if(!deal_upside_card(&playerCards[1], deck)) return false;
+
+	return true;
+}
+
+bool deal_dealer_cards(Card* dealerCards, Card* deck)
+{
+	if(!deal_hidden_card(&dealerCards[0], deck)) return false;
+	if(!deal_upside_card(&dealerCards[1], deck)) return false;
+
+	return true;
+}
+
+bool deal_upside_cards(Card* cards, Card* deck, int amount)
 {
 	unsigned int deckAmount = card_array_amount(deck);
 
@@ -145,7 +213,7 @@ bool deal_playing_cards(Card* cards, Card* deck, int amount)
 
 	for(int index = 0; index < amount; index += 1)
 	{
-		if(!deal_playing_card(&cards[index], deck)) return false;
+		if(!deal_upside_card(&cards[index], deck)) return false;
 	}
 
 	return true;
