@@ -19,8 +19,11 @@ extern const unsigned int CARD_HEIGHT;
 
 extern const unsigned int CARD_MARGIN;
 extern const unsigned int HAND_MARGIN;
+extern const unsigned int DECK_MARGIN;
 
 extern const char CARD_FILE_MALL[];
 extern const char CARD_TEXT_MALL[];
+
+extern const unsigned int DECK_DISPLAY_AMOUNT;
 
 #endif

@@ -1,7 +1,7 @@
 
 #include "../Header-Files-Folder/master-include-file.h"
 
-bool game_play_handler(Screen screen, Card* deck)
+bool game_play_handler(Screen screen, Card* deck, int* playerMoney)
 {
 	/*
 	1. Get cards
@@ -15,8 +15,53 @@ bool game_play_handler(Screen screen, Card* deck)
 	*/
 
 	// Get cards
+
+	shuffle_card_array(deck);
+
 	Card* playerCards = create_empty_deck(8);
 	Card* dealerCards = create_empty_deck(8);
+
+	int playerStake = 0;
+
+
+	render_game_board(screen, playerCards, dealerCards, deck, playerStake, *playerMoney);
+	SDL_UpdateWindowSurface(screen.window);
+
+
+	Event eventis;
+
+	SDL_WaitEvent(&eventis);
+
+	while(playerStake <= 0)
+	{
+		SDL_WaitEvent(&eventis);
+
+		if(eventis.type == SDL_QUIT || (eventis.type == SDL_KEYDOWN && eventis.key.keysym.sym == SDLK_q))
+		{
+			free(playerCards);
+			free(dealerCards);
+
+			return false;
+		}
+
+		else if(eventis.type == SDL_KEYDOWN && eventis.key.keysym.sym == SDLK_1)
+		{
+			playerStake = 25;
+		}
+
+		else if(eventis.type == SDL_KEYDOWN && eventis.key.keysym.sym == SDLK_2)
+		{
+			playerStake = 50;
+		}
+
+		else if(eventis.type == SDL_KEYDOWN && eventis.key.keysym.sym == SDLK_3)
+		{
+			playerStake = 75;
+		}
+	}
+
+	*playerMoney -= playerStake;
+
 
 
 	if(!deal_dealer_cards(dealerCards, deck))
@@ -38,7 +83,7 @@ bool game_play_handler(Screen screen, Card* deck)
 
 	// Try to get close to 21
 
-	render_game_board(screen, playerCards, dealerCards);
+	render_game_board(screen, playerCards, dealerCards, deck, playerStake, *playerMoney);
 	SDL_UpdateWindowSurface(screen.window);
 
 	Event event;
@@ -50,9 +95,6 @@ bool game_play_handler(Screen screen, Card* deck)
 	while(playerValue < 21)
 	{
 		SDL_WaitEvent(&event);
-
-		render_game_board(screen, playerCards, dealerCards);
-		SDL_UpdateWindowSurface(screen.window);
 
 		if(event.type == SDL_QUIT || (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_q))
 		{
@@ -78,9 +120,12 @@ bool game_play_handler(Screen screen, Card* deck)
 
 				return false;
 			}
-		}
 
-		playing_cards_value(&playerValue, playerCards);
+			render_game_board(screen, playerCards, dealerCards, deck, playerStake, *playerMoney);
+			SDL_UpdateWindowSurface(screen.window);
+
+			playing_cards_value(&playerValue, playerCards);
+		}
 	}
 	// The dealer gets their cards
 
@@ -90,7 +135,7 @@ bool game_play_handler(Screen screen, Card* deck)
 		dealerCards[index] = TURN_CARD_SHOW(dealerCards[index]);
 	}
 
-	render_game_board(screen, playerCards, dealerCards);
+	render_game_board(screen, playerCards, dealerCards, deck, playerStake, *playerMoney);
 	SDL_UpdateWindowSurface(screen.window);
 
 	int dealerValue = 0;
@@ -124,7 +169,7 @@ bool game_play_handler(Screen screen, Card* deck)
 			playing_cards_value(&dealerValue, dealerCards);
 			hasAnAce = rank_within_cards(dealerCards, RANK_ACE);
 
-			render_game_board(screen, playerCards, dealerCards);
+			render_game_board(screen, playerCards, dealerCards, deck, playerStake, *playerMoney);
 			SDL_UpdateWindowSurface(screen.window);
 		}
 	}
@@ -133,26 +178,31 @@ bool game_play_handler(Screen screen, Card* deck)
 
 	if(playerValue <= 21 && (playerValue > dealerValue ||  dealerValue > 21))
 	{ // WIN
-
+		*playerMoney += playerStake * 2;
 	}
 
 	else if(playerValue < dealerValue || playerValue > 21)
 	{ // LOSE
-		
+		*playerMoney += 0;
 	}
 
 	else if(playerValue == dealerValue && !(dealerValue > 21 && playerValue > 21))
 	{ // SAME
-
+		*playerMoney += playerStake;
 	}
 
-	render_game_board(screen, playerCards, dealerCards);
-	render_result_screen(screen, playerValue, dealerValue);
+	render_game_board(screen, playerCards, dealerCards, deck, playerStake, *playerMoney);
+	render_result_screen(screen, playerValue, dealerValue, playerStake);
 
 	SDL_UpdateWindowSurface(screen.window);
 
+
+	append_array_cards(deck, playerCards);
+	append_array_cards(deck, dealerCards);
+
 	free(playerCards);
 	free(dealerCards);
+
 
 	Event eventosaurus;
 
@@ -182,11 +232,11 @@ int main(int argc, char* argv[])
 	Card* deck = create_default_deck();
 	shuffle_card_array(deck);
 
-	int index = 0;
+	int playerMoney = 500;
 
-	while(game_play_handler(screen, deck) && index < 20)
+	while(game_play_handler(screen, deck, &playerMoney))
 	{
-		index += 1;
+		
 	}
 
 	printf("free deck and cards\n");

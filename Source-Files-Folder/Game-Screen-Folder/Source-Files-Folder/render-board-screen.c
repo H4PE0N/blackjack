@@ -40,20 +40,139 @@ bool default_folder_font(Font** font, char filename[], int size)
 	return extract_file_font(font, filePath, size);
 }
 
-bool render_game_board(Screen screen, Card* playerCards, Card* dealerCards)
+bool render_screen_deck(Screen screen, Card deck[], int width, int height)
+{
+	unsigned int amount = card_array_amount(deck);
+
+	unsigned int displayAmount = (amount > DECK_DISPLAY_AMOUNT) ? DECK_DISPLAY_AMOUNT : amount;
+
+	int renderHeight = height - (CARD_HEIGHT / 2);
+	int startWidth = width - ((DECK_MARGIN * (displayAmount - 1) + CARD_WIDTH) / 2);
+
+	for(int index = 0; index < displayAmount; index += 1)
+	{
+		int renderWidth = startWidth + (DECK_MARGIN * index);
+
+		if(!render_screen_card(screen, deck[index], renderWidth, renderHeight)) return false;
+	}
+
+	return true;
+}
+
+bool render_game_board(Screen screen, Card playerCards[], Card dealerCards[], Card deck[], int playerStake, int playerMoney)
 {
 	Surface* tableImage = NULL;
 	if(!default_folder_image(&tableImage, (char*) TABLE_IMAGE)) return false;
 	
-	Rect tablePosition = {0, 0, 800, 800};
+	Rect tablePosition = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
 	
 	if(!render_screen_image(screen, tableImage, tablePosition)) return false;
 
 
-	if(!render_screen_cards(screen, dealerCards, WINDOW_WIDTH / 2, HAND_MARGIN + CARD_HEIGHT / 2)) return false;
+	if(!render_screen_cards(screen, dealerCards, WINDOW_WIDTH / 6 * 3, WINDOW_HEIGHT / 4 * 1)) return false;
+	if(!render_screen_cards(screen, playerCards, WINDOW_WIDTH / 6 * 3, WINDOW_HEIGHT / 4 * 3)) return false;
 
-	if(!render_screen_cards(screen, playerCards, WINDOW_WIDTH / 2, WINDOW_HEIGHT - CARD_HEIGHT / 2 - HAND_MARGIN)) return false;
 
+	render_game_options(screen);
+	render_stake_options(screen);
+
+	render_player_values(screen, playerMoney);
+	render_play_values(screen, playerCards, dealerCards, playerStake);
+
+	return true;
+}
+
+bool render_stake_options(Screen screen)
+{
+	Color color = {255, 255, 255};
+
+	char* textBlock[] = {"1 : 25", "2 : 50", "3 : 75"};
+
+	render_text_block(screen, textBlock, 3, color, WINDOW_WIDTH / 6 * 5, WINDOW_HEIGHT / 4 * 1, 2);
+
+	return true;
+}
+
+bool render_result_screen(Screen screen, int playerValue, int dealerValue, int playerStake)
+{
+	char resultText[200];
+
+	Color color = {255, 255, 255};
+
+	if(playerValue <= 21 && (playerValue > dealerValue ||  dealerValue > 21))
+	{ // WIN
+		sprintf(resultText, "YOU WON : $%d", playerStake);
+		color = (Color) {0, 0, 255};
+	}
+
+	else if(playerValue < dealerValue || playerValue > 21)
+	{ // LOSE
+		sprintf(resultText, "YOU LOST : $%d", playerStake);
+		color = (Color) {255, 0, 0};
+	}
+
+	else if(playerValue == dealerValue && !(dealerValue > 21 && playerValue > 21))
+	{ // SAME
+		sprintf(resultText, "EQUAL");
+	}
+
+	render_screen_text(screen, resultText, color, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 4);
+	
+
+	return true;
+}
+
+bool render_text_block(Screen screen, char* textArray[], int amount, Color color, int width, int height, float size)
+{
+	Font* textFont = NULL;
+
+	if(!default_folder_font(&textFont, (char*) FONT_FILE, FONT_SIZE)) return false;
+
+	Surface* textSurfaceArray[amount];
+
+	int textHeight = 0;
+	int textWidth = 0;
+
+	for(int index = 0; index < amount; index += 1)
+	{
+		textSurfaceArray[index] = TTF_RenderText_Solid(textFont, textArray[index], color); 
+
+		if(textSurfaceArray[index]->w * size > textWidth) textWidth = textSurfaceArray[index]->w * size;
+
+		if(textSurfaceArray[index]->h * size > textHeight) textHeight = textSurfaceArray[index]->h * size;
+	}
+
+	int renderWidth = (width - textWidth / 2);
+	int totalHeight = ((1.25 * textHeight) * amount) / 2;
+
+	for(int index = 0; index < amount; index += 1)
+	{
+		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(screen.renderer, textSurfaceArray[index]);
+
+		int renderHeight = (height - totalHeight + ((1.2 * textHeight) * index));
+
+		//int currentWidth = textSurfaceArray[index]->w * size;
+
+		Rect position = {renderWidth, renderHeight, textWidth, textHeight};
+
+		SDL_RenderCopy(screen.renderer, textTexture, NULL, &position);
+
+		SDL_FreeSurface(textSurfaceArray[index]);
+		SDL_DestroyTexture(textTexture);
+	}
+
+	TTF_CloseFont(textFont);
+
+	return true;
+}
+
+bool render_play_values(Screen screen, Card playerCards[], Card dealerCards[], int playerStake)
+{
+	Color color = {255, 255, 255};
+
+	char stakeText[200];
+
+	sprintf(stakeText, "STAKE : $%d", playerStake);
 
 	int playerValue = 0;
 	int dealerValue = 0;
@@ -61,71 +180,34 @@ bool render_game_board(Screen screen, Card* playerCards, Card* dealerCards)
 	playing_cards_value(&playerValue, playerCards);
 	upside_cards_value(&dealerValue, dealerCards);
 
-
-	Color color = {255, 255, 255};
-
 	char playerText[200];
 	char dealerText[200];
 
-	sprintf(playerText, "PlayerValue: %d", playerValue);
-	sprintf(dealerText, "DealerValue: %d", dealerValue);
-	
+	sprintf(playerText, "Player: %d", playerValue);
+	sprintf(dealerText, "Dealer: %d", dealerValue);
 
-	render_screen_text(screen, playerText, color, 450, 500, 1.5);
-	render_screen_text(screen, dealerText, color, 450, 540, 1.5);
+	char* textBlock[] = {stakeText, playerText, dealerText};
 
-	render_game_options(screen);
-
-	render_player_values(screen);
-
-	render_play_values(screen);
+	render_text_block(screen, textBlock, 3, color, WINDOW_WIDTH / 6 * 1, WINDOW_HEIGHT / 4 * 3, 2);
 
 	return true;
 }
 
-bool render_result_screen(Screen screen, int playerValue, int dealerValue)
-{
-	if(playerValue <= 21 && (playerValue > dealerValue ||  dealerValue > 21))
-	{ // WIN
-		Color color = {0, 0, 255};
-
-		render_screen_text(screen, "YOU WON : $50", color, 0, 380, 4);
-	}
-
-	else if(playerValue < dealerValue || playerValue > 21)
-	{ // LOSE
-		Color color = {255, 0, 0};
-
-		render_screen_text(screen, "YOU LOST : $50", color, 0, 380, 4);
-	}
-
-	else if(playerValue == dealerValue && !(dealerValue > 21 && playerValue > 21))
-	{ // SAME
-		Color color = {255, 255, 255};
-
-		render_screen_text(screen, "EQUAL", color, 0, 380, 4);	
-	}
-	
-
-	return true;
-}
-
-bool render_play_values(Screen screen)
+bool render_player_values(Screen screen, int playerMoney)
 {
 	Color color = {255, 255, 255};
 
-	render_screen_text(screen, "STAKE : $50", color, 100, 500, 1.5);
+	char moneyText[200];
 
-	return true;
-}
+	sprintf(moneyText, "MONEY : $%d", playerMoney);
 
-bool render_player_values(Screen screen)
-{
-	Color color = {255, 255, 255};
+	char nameText[200];
 
-	render_screen_text(screen, "NAME : HAMPUS FRIDHOLM", color, 100, 300, 1.5);
+	sprintf(nameText, "NAME : HAMPUS");
 
-	render_screen_text(screen, "MONEY : $490", color, 100, 340, 1.5);
+	char* textBlock[] = {nameText, moneyText};
+
+	render_text_block(screen, textBlock, 2, color, WINDOW_WIDTH / 6 * 1, WINDOW_HEIGHT / 4 * 1, 1.5);
 
 	return true;
 }
@@ -134,9 +216,9 @@ bool render_game_options(Screen screen)
 {
 	Color color = {255, 255, 255};
 
-	render_screen_text(screen, "DEAL : H", color, 500, 100, 1.5);
+	char* textBlock[] = {"DEAL : J", "STAND : K", "SPLIT : L", "DOUBL : O"};
 
-	render_screen_text(screen, "STAY : G", color, 500, 140, 1.5);
+	render_text_block(screen, textBlock, 4, color, WINDOW_WIDTH / 6 * 5, WINDOW_HEIGHT / 4 * 3, 2);
 
 	return true;
 }
@@ -209,7 +291,10 @@ bool render_screen_text(Screen screen, char text[], Color color, int width, int 
 
 	SDL_Texture* message = SDL_CreateTextureFromSurface(screen.renderer, surfaceMessage);
 
-	Rect position = {width, height, surfaceMessage->w * size, surfaceMessage->h * size};
+	int textHeight = surfaceMessage->h * size;
+	int textWidth = surfaceMessage->w * size;
+
+	Rect position = {width - textWidth / 2, height - textHeight / 2, textWidth, textHeight};
 
 	SDL_RenderCopy(screen.renderer, message, NULL, &position);
 

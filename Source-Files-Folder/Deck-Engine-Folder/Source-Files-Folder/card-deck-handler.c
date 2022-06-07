@@ -107,6 +107,18 @@ bool playing_cards_value(int* value, Card cards[])
 	return true;
 }
 
+bool append_array_cards(Card* deck, Card* cards)
+{
+	int deckAmount = card_array_amount(deck);
+	int cardAmount = card_array_amount(cards);
+
+	for(int index = 0; index < cardAmount; index += 1)
+	{
+		deck[deckAmount + index] = cards[index];
+	}
+	return true;
+}
+
 // FLAG: SHOW, DOWN, NONE
 bool upside_cards_value(int* value, Card cards[])
 {

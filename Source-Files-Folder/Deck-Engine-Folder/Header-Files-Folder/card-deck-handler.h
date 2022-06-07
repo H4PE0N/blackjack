@@ -14,6 +14,8 @@ bool deck_card_exists(Card);
 
 unsigned int card_array_amount(Card[]);
 
+bool append_array_cards(Card*, Card*);
+
 bool deal_upside_card(Card*, Card*);
 
 bool deal_upside_cards(Card*, Card*, int);
